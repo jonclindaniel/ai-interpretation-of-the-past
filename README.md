@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11117535.svg)](https://doi.org/10.5281/zenodo.11117535)
+
 # Supplemental Code for "Artificial Intelligence and the Interpretation of the Past: A Multimodal Encoding Approach"
 
 The code and data in this repository can be used to replicate the analysis in Magnani and Clindaniel "Artificial Intelligence and the Interpretation of the Past: A Multimodal Encoding Approach". The code that follows uses the OpenAI API to generate text and images in response to a prompt asking for information about "a day in the life of a neandertal." It then compares the AI-generated content to a large scholarly corpus of text about neandertals by encoding the scholarly text and AI-generated content into the same multimodal embedding space (CLIP).
