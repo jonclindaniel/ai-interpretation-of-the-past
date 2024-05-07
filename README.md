@@ -547,7 +547,7 @@ To quantitatively assess how AI-generated neandertal content compares to scholar
 ```python
 # Initial pass to compress data to lower dimensions for clustering
 abstract_embeds_np = np.array(abstract_embeds.embed.values.tolist())
-umap_50comp_model = umap.UMAP(n_neighbors=30,
+umap_10comp_model = umap.UMAP(n_neighbors=30,
                             n_components=10,
                             min_dist=0.0,
                             metric='cosine',
@@ -559,7 +559,7 @@ cluster = hdbscan.HDBSCAN(min_cluster_size=15,
                           metric='euclidean',
                           cluster_selection_method='eom',
                           prediction_data=True) \
-                 .fit(umap_50comp_model.embedding_)
+                 .fit(umap_10comp_model.embedding_)
 
 # Prepare data for plotting in two dimensions now that clusters have been identified
 umap_2comp_model = umap.UMAP(n_neighbors=30,
@@ -578,8 +578,8 @@ gen_embeds_np = np.concatenate(
     np.stack([chat_response_embeds_np[k]['avg'] for k in ['general', 'expert']])]
 )
 
-gen_embeds_umap_50comp = umap_50comp_model.transform(gen_embeds_np)
-gen_embeds_clusters = hdbscan.approximate_predict(cluster, gen_embeds_umap_50comp)
+gen_embeds_umap_10comp = umap_10comp_model.transform(gen_embeds_np)
+gen_embeds_clusters = hdbscan.approximate_predict(cluster, gen_embeds_umap_10comp)
 gen_embeds_umap_2comp = umap_2comp_model.transform(gen_embeds_np)
 
 # add transformed data to result dataframe
@@ -1037,9 +1037,9 @@ cluster_leaf = hdbscan.HDBSCAN(min_cluster_size=200,
                                cluster_selection_method='leaf',
                                leaf_size=5,
                                prediction_data=True) \
-                      .fit(umap_50comp_model.embedding_)
+                      .fit(umap_10comp_model.embedding_)
 
-gen_embeds_clusters_leaf = hdbscan.approximate_predict(cluster_leaf, gen_embeds_umap_50comp)
+gen_embeds_clusters_leaf = hdbscan.approximate_predict(cluster_leaf, gen_embeds_umap_10comp)
 
 result['labels_leaf'] = cluster_leaf.labels_
 result_gen_embeds['labels_leaf'] = gen_embeds_clusters_leaf[0]
@@ -1110,9 +1110,9 @@ Let's consider the subcluster membership of each AI-generated content category i
 
 
 ```python
-def plot_subcluster_membership(embeds, umap_50comp_model, cluster_leaf, result, category):
-    gen_embeds_umap_50comp = umap_50comp_model.transform(embeds)
-    gen_embeds_clusters_leaf = hdbscan.approximate_predict(cluster_leaf, gen_embeds_umap_50comp)
+def plot_subcluster_membership(embeds, umap_10comp_model, cluster_leaf, result, category):
+    gen_embeds_umap_10comp = umap_10comp_model.transform(embeds)
+    gen_embeds_clusters_leaf = hdbscan.approximate_predict(cluster_leaf, gen_embeds_umap_10comp)
     gen_embeds_umap_2comp = umap_2comp_model.transform(embeds)
 
     # add transformed data to result dataframe
@@ -1161,7 +1161,7 @@ def plot_subcluster_membership(embeds, umap_50comp_model, cluster_leaf, result, 
 
 ```python
 embeds = chat_response_embeds_np['general']['embeds']
-plot_subcluster_membership(embeds, umap_50comp_model, cluster_leaf, result, f'ChatGPT (general)')
+plot_subcluster_membership(embeds, umap_10comp_model, cluster_leaf, result, f'ChatGPT (general)')
 ```
 
     ChatGPT (general)
@@ -1181,7 +1181,7 @@ plot_subcluster_membership(embeds, umap_50comp_model, cluster_leaf, result, f'Ch
 
 ```python
 embeds = chat_response_embeds_np['expert']['embeds']
-plot_subcluster_membership(embeds, umap_50comp_model, cluster_leaf, result, f'ChatGPT (expert)')
+plot_subcluster_membership(embeds, umap_10comp_model, cluster_leaf, result, f'ChatGPT (expert)')
 ```
 
     ChatGPT (expert)
@@ -1202,7 +1202,7 @@ plot_subcluster_membership(embeds, umap_50comp_model, cluster_leaf, result, f'Ch
 
 ```python
 embeds = gen_img_embeds_np['rev_general']['revised_prompt_embeds']
-plot_subcluster_membership(embeds, umap_50comp_model, cluster_leaf, result, f'DALL-E 3 revised prompt (general)')
+plot_subcluster_membership(embeds, umap_10comp_model, cluster_leaf, result, f'DALL-E 3 revised prompt (general)')
 ```
 
     DALL-E 3 revised prompt (general)
@@ -1222,7 +1222,7 @@ plot_subcluster_membership(embeds, umap_50comp_model, cluster_leaf, result, f'DA
 
 ```python
 embeds = gen_img_embeds_np['rev_expert']['revised_prompt_embeds']
-plot_subcluster_membership(embeds, umap_50comp_model, cluster_leaf, result, f'DALL-E 3 revised prompt (expert)')
+plot_subcluster_membership(embeds, umap_10comp_model, cluster_leaf, result, f'DALL-E 3 revised prompt (expert)')
 ```
 
     DALL-E 3 revised prompt (expert)
@@ -1247,7 +1247,7 @@ embeds = np.concatenate([gen_img_embeds_np['rev_general']['img_embeds'],
                          gen_img_embeds_np['rev_expert']['img_embeds'],
                          gen_img_embeds_np['norev_general']['img_embeds'],
                          gen_img_embeds_np['norev_expert']['img_embeds']])
-plot_subcluster_membership(embeds, umap_50comp_model, cluster_leaf, result, f'DALL-E 3 Images (all)')
+plot_subcluster_membership(embeds, umap_10comp_model, cluster_leaf, result, f'DALL-E 3 Images (all)')
 ```
 
     DALL-E 3 Images (all)
@@ -1267,7 +1267,7 @@ plot_subcluster_membership(embeds, umap_50comp_model, cluster_leaf, result, f'DA
 
 ```python
 embeds = gen_img_embeds_np['rev_general']['img_embeds']
-plot_subcluster_membership(embeds, umap_50comp_model, cluster_leaf, result, f'DALL-E 3 Images (general, with prompt revisions)')
+plot_subcluster_membership(embeds, umap_10comp_model, cluster_leaf, result, f'DALL-E 3 Images (general, with prompt revisions)')
 ```
 
     DALL-E 3 Images (general, with prompt revisions)
@@ -1286,7 +1286,7 @@ plot_subcluster_membership(embeds, umap_50comp_model, cluster_leaf, result, f'DA
 
 ```python
 embeds = gen_img_embeds_np['rev_expert']['img_embeds']
-plot_subcluster_membership(embeds, umap_50comp_model, cluster_leaf, result, f'DALL-E 3 Images (expert, with prompt revisions)')
+plot_subcluster_membership(embeds, umap_10comp_model, cluster_leaf, result, f'DALL-E 3 Images (expert, with prompt revisions)')
 
 ```
 
@@ -1306,7 +1306,7 @@ plot_subcluster_membership(embeds, umap_50comp_model, cluster_leaf, result, f'DA
 
 ```python
 embeds = gen_img_embeds_np['norev_general']['img_embeds']
-plot_subcluster_membership(embeds, umap_50comp_model, cluster_leaf, result, f'DALL-E 3 Images (general, without prompt revisions)')
+plot_subcluster_membership(embeds, umap_10comp_model, cluster_leaf, result, f'DALL-E 3 Images (general, without prompt revisions)')
 ```
 
     DALL-E 3 Images (general, without prompt revisions)
@@ -1326,7 +1326,7 @@ plot_subcluster_membership(embeds, umap_50comp_model, cluster_leaf, result, f'DA
 
 ```python
 embeds = gen_img_embeds_np['norev_expert']['img_embeds']
-plot_subcluster_membership(embeds, umap_50comp_model, cluster_leaf, result, f'DALL-E 3 Images (expert, without prompt revisions)')
+plot_subcluster_membership(embeds, umap_10comp_model, cluster_leaf, result, f'DALL-E 3 Images (expert, without prompt revisions)')
 ```
 
     DALL-E 3 Images (expert, without prompt revisions)
